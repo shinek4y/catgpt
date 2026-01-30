@@ -20,5 +20,8 @@
   "license": "MIT",
   "dependencies": {
     "telegraf": "^4.15.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.1.0"
   }
 }

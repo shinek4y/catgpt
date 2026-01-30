@@ -1,7 +1,7 @@
 // @ts-check
 import { Telegraf } from 'telegraf';
 
-const bot = new Telegraf(process.env.BOT_TOKEN);
+const bot = new Telegraf(process.env.BOT_TOKEN || '');
 
 const OLLAMA_HOST = process.env.OLLAMA_HOST || 'http://ollama:11434';
 const OLLAMA_MODEL = process.env.OLLAMA_MODEL || 'mistral';
@@ -12,7 +12,7 @@ const userContexts = new Map();
 bot.command('start', (ctx) => {
   ctx.reply(
     `🐱 Meow! I'm CatGPT!\n\n` +
-    `I'm an AI assistant powered by ${OLLAMA_MODEL}. ` +
+    `I'm an AI assistant. ` +
     `Just send me a message and I'll respond!\n\n` +
     `Commands:\n` +
     `/start - Show this message\n` +
@@ -37,6 +37,7 @@ bot.command('clear', (ctx) => {
   ctx.reply('🧹 Conversation history cleared!');
 });
 
+/** @type {(userId: number, prompt: string) => Promise<string>} */
 async function generateResponse(userId, prompt) {
   // Get or create user context
   let context = userContexts.get(userId) || [];
@@ -83,7 +84,7 @@ bot.on('text', async (ctx) => {
 
   // Keep sending typing indicator every 5 seconds
   const typingInterval = setInterval(() => {
-    ctx.sendChatAction('typing').catch(() => {});
+    ctx.sendChatAction('typing').catch(() => { });
   }, 5000);
 
   try {
@@ -98,7 +99,7 @@ bot.on('text', async (ctx) => {
     } else {
       await ctx.reply(response);
     }
-  } catch (error) {
+  } catch (/** @type {any} */ error) {
     console.error('Error generating response:', error.message);
     let errorMsg = error.message;
     if (error.cause?.code === 'ECONNREFUSED') {
@@ -119,7 +120,7 @@ bot.on('text', async (ctx) => {
 // Error handling
 bot.catch((err, ctx) => {
   console.error('Bot error:', err);
-  ctx.reply('😿 An unexpected error occurred. Please try again.').catch(() => {});
+  ctx.reply('😿 An unexpected error occurred. Please try again.').catch(() => { });
 });
 
 // Graceful shutdown
