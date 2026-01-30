@@ -57,20 +57,21 @@ show_menu() {
     echo ""
     echo -e "  ${CYAN}Management${NC}"
     echo "    8) Restart bot"
-    echo "    9) Update bot token"
+    echo "    9) Shutdown (stop all)"
+    echo "   10) Update bot token"
     echo ""
     echo -e "  ${CYAN}Ollama${NC}"
-    echo "   10) Pull/update model"
-    echo "   11) List models"
-    echo "   12) Ollama logs"
+    echo "   11) Pull/update model"
+    echo "   12) List models"
+    echo "   13) Ollama logs"
     echo ""
     echo -e "  ${CYAN}Local${NC}"
-    echo "   13) Run locally"
-    echo "   14) Git status"
-    echo "   15) Quick commit & push"
+    echo "   14) Run locally"
+    echo "   15) Git status"
+    echo "   16) Quick commit & push"
     echo ""
     echo -e "  ${CYAN}Other${NC}"
-    echo "   16) SSH to server"
+    echo "   17) SSH to server"
     echo "    0) Exit"
     echo ""
 }
@@ -198,6 +199,13 @@ restart_bot() {
     remote "sudo docker logs $CONTAINER --tail 10"
 }
 
+shutdown_bot() {
+    if ! confirm "Stop all containers?"; then return; fi
+    info "Stopping containers..."
+    remote "cd $REMOTE_PATH && sudo docker compose -f $COMPOSE_FILE down"
+    success "Stopped!"
+}
+
 update_token() {
     warn "This will update the bot token on the server"
     echo -e "${YELLOW}Enter new BOT_TOKEN (hidden):${NC}"
@@ -297,6 +305,7 @@ if [ -n "$1" ]; then
         status) check_status ;;
         system) system_status ;;
         restart) restart_bot ;;
+        shutdown) shutdown_bot ;;
         token) update_token ;;
         model) pull_model ;;
         models) list_models ;;
@@ -305,7 +314,7 @@ if [ -n "$1" ]; then
         git) git_status ;;
         commit) quick_commit ;;
         ssh) ssh_server ;;
-        *) echo "Usage: $0 [setup|deploy|actions|logs|follow|status|system|restart|token|model|models|ollama-logs|local|git|commit|ssh]"; exit 1 ;;
+        *) echo "Usage: $0 [setup|deploy|actions|logs|follow|status|system|restart|shutdown|token|model|models|ollama-logs|local|git|commit|ssh]"; exit 1 ;;
     esac
     exit 0
 fi
@@ -323,14 +332,15 @@ while true; do
         6) check_status ;;
         7) system_status ;;
         8) restart_bot ;;
-        9) update_token ;;
-        10) pull_model ;;
-        11) list_models ;;
-        12) ollama_logs ;;
-        13) run_local ;;
-        14) git_status ;;
-        15) quick_commit ;;
-        16) ssh_server ;;
+        9) shutdown_bot ;;
+        10) update_token ;;
+        11) pull_model ;;
+        12) list_models ;;
+        13) ollama_logs ;;
+        14) run_local ;;
+        15) git_status ;;
+        16) quick_commit ;;
+        17) ssh_server ;;
         0) echo "Bye!"; exit 0 ;;
         *) error "Invalid option" ;;
     esac

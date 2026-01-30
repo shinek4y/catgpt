@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ssh oracle \"sudo docker restart catgpt && sleep 5 && sudo docker logs catgpt --tail 20\")"
+    ]
+  }
+}
