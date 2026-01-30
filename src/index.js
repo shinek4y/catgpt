@@ -117,8 +117,14 @@ bot.on('text', async (ctx) => {
   }
 });
 
-// Error handling
+// Error handling - ignore Telegraf's internal handler timeouts
 bot.catch((err, ctx) => {
+  // Telegraf has a 90s handler timeout that fires while Ollama is still working
+  // The response will still be sent, so we silently ignore these
+  if (err.name === 'TimeoutError' && err.message?.includes('Promise timed out')) {
+    console.log('Telegraf handler timeout (ignored, response still processing)');
+    return;
+  }
   console.error('Bot error:', err);
   ctx.reply('😿 An unexpected error occurred. Please try again.').catch(() => { });
 });
