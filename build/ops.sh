@@ -200,9 +200,10 @@ restart_bot() {
 }
 
 shutdown_bot() {
-    if ! confirm "Stop all containers?"; then return; fi
+    if ! confirm "Stop CatGPT containers?"; then return; fi
     info "Stopping containers..."
-    remote "cd $REMOTE_PATH && sudo docker compose -f $COMPOSE_FILE down"
+    remote "sudo docker stop $CONTAINER $OLLAMA_CONTAINER 2>/dev/null"
+    remote "sudo docker rm $CONTAINER $OLLAMA_CONTAINER 2>/dev/null"
     success "Stopped!"
 }
 
