@@ -1,0 +1,24 @@
+{
+  "name": "catgpt",
+  "version": "1.0.0",
+  "description": "Telegram bot powered by local LLM via Ollama",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "local": "node --env-file=build/.env.local src/index.js",
+    "deploy": "git tag -d deploy 2>/dev/null || true; git push origin :refs/tags/deploy 2>/dev/null || true; git tag -a deploy -m deploy HEAD && git push origin refs/tags/deploy"
+  },
+  "keywords": [
+    "telegram",
+    "bot",
+    "llm",
+    "ollama",
+    "ai"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "telegraf": "^4.15.0"
+  }
+}

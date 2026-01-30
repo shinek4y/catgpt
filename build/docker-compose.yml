@@ -1,0 +1,35 @@
+version: '4'
+services:
+  bot:
+    image: node:20.18-alpine
+    restart: unless-stopped
+    working_dir: /app
+    container_name: ${CONTAINER_NAME:-catgpt}
+    volumes:
+      - ..:/app
+    depends_on:
+      ollama:
+        condition: service_healthy
+    env_file:
+      - ./.env
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    command: "/bin/sh -c 'npm install --omit=dev && npm start'"
+
+  ollama:
+    image: ollama/ollama:latest
+    restart: unless-stopped
+    container_name: ${CONTAINER_NAME:-catgpt}-ollama
+    volumes:
+      - ollama-data:/root/.ollama
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:11434/api/tags || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  ollama-data:

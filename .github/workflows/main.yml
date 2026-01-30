@@ -1,0 +1,28 @@
+name: deploy
+on:
+  push:
+    tags:
+      - deploy
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: ssh_n_deploy
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          script: |
+            cd ~/catgpt
+            source build/.env
+            git fetch origin main
+            git reset --hard ${{ github.sha }}
+            export CONTAINER_NAME
+            echo "=== Deploy Config ==="
+            echo "CONTAINER_NAME=$CONTAINER_NAME"
+            echo "===================="
+            sudo -E docker compose -f ./build/docker-compose.yml up -d --force-recreate
+            sudo docker ps --filter name=$CONTAINER_NAME
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.PRIVATE_KEY }}
